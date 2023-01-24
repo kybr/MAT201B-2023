@@ -14,6 +14,7 @@ using namespace std;
 struct AnApp : App {
   Mesh original, current;
   // hint: add more meshes here: cube, cylindar, custom
+  Mesh cube, cylinder, custom, target;
 
   void onCreate() override {
     // note: File::currentPath() is going to be something like:
@@ -57,6 +58,24 @@ struct AnApp : App {
         current.color(color);
 
         // hint: configure more meshes here
+
+        target.vertex(position);
+        target.color(color);
+
+        cube.vertex(color.r - 0.5, color.g - 0.5, color.b - 0.5);
+        cube.color(color);
+
+        {
+          HSV c(color);
+          cylinder.vertex(c.s * sin(M_2PI * c.h), c.v - 0.5,
+                          c.s * cos(M_2PI * c.h));
+          cylinder.color(color);
+        }
+        {
+          HSV c(color);
+          custom.vertex(c.h, c.s, c.v);
+          custom.color(color);
+        }
       }
     }
 
@@ -68,6 +87,9 @@ struct AnApp : App {
     // configure the meshs to render as points
     original.primitive(Mesh::POINTS);
     current.primitive(Mesh::POINTS);
+    cube.primitive(Mesh::POINTS);
+    cylinder.primitive(Mesh::POINTS);
+    custom.primitive(Mesh::POINTS);
 
     // hint: configure the new meshes here
 
@@ -75,7 +97,17 @@ struct AnApp : App {
     nav().pos(0, 0, 5);
   }
 
+  double t = 1;
   void onAnimate(double dt) override {
+    t += dt;
+    if (t < 1) {
+      for (int i = 0; i < original.vertices().size(); ++i) {
+        current.vertices()[i].lerp(target.vertices()[i], 0.3);
+      }
+    } else {
+      current.vertices() = target.vertices();
+    }
+
     // hint: create an animation timer
 
     // note: meshname.vertices() is the array of vertices
@@ -87,18 +119,23 @@ struct AnApp : App {
   }
 
   bool onKeyDown(Keyboard const& k) override {
+    t = 0;
     switch (k.key()) {
       case '1': {
         // note: trigger transition back to original vertex positions
+        target.vertices() = original.vertices();
       } break;
       case '2': {
         // note: trigger transition toward an RGB cube
+        target.vertices() = cube.vertices();  // deep copy?
       } break;
       case '3': {
         // note: trigger transition toward an HSV cylinder
+        target.vertices() = cylinder.vertices();  // deep copy?
       } break;
       case '4': {
         // note: trigger transition to your custom arrangement
+        target.vertices() = custom.vertices();  // deep copy?
       } break;
     }
     return true;
