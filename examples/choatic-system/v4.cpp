@@ -21,7 +21,10 @@
 using namespace al;
 using namespace std;
 
-string slurp(string fileName) {
+THIS IS BROKEN ~UPDATE
+
+    string
+    slurp(string fileName) {
   fstream file(fileName);
   string returnValue = "";
   while (file.good()) {
