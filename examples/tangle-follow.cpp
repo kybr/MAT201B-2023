@@ -81,7 +81,7 @@ struct MyApp : App {
     m.ribbonize(0.01, true);
     m.generateNormals();
     m.primitive(Mesh::TRIANGLE_STRIP);
-    g.color(0.8);
+    // g.color(0.8);
     g.draw(m);
   }
 };

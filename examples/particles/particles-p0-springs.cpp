@@ -115,7 +115,7 @@ struct AlloApp : App {
     }
 
     // clear all accelerations (IMPORTANT!!)
-    for (auto &a : acceleration) a.zero();
+    for (auto &a : acceleration) a.set(0.0);
   }
 
   bool onKeyDown(const Keyboard &k) override {
