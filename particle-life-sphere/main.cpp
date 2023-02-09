@@ -26,26 +26,11 @@ struct MyApp : al::App {
   al::ShaderProgram pointShader;
   al::ShaderProgram defaultShader;
 
-  al::Mesh box{al::Mesh::LINES};
   void onCreate() override {
-    box.vertex(0, 0, 0);
-    box.vertex(1, 0, 0);
-    box.vertex(0, 0, 0);
-    box.vertex(0, 1, 0);
-    box.vertex(0, 0, 0);
-    box.vertex(0, 0, 1);
-    box.vertex(1, 1, 1);
-    box.vertex(1, 1, 0);
-    box.vertex(1, 1, 1);
-    box.vertex(0, 1, 1);
-    box.vertex(1, 1, 1);
-    box.vertex(1, 0, 1);
-    box.scale(space.dim());
-
+    auto center = al::Vec3d(space.maxRadius());
     velocity.resize(space.numObjects());
     for (int i = 0; i < space.numObjects(); ++i) {
-      space.move(i, al::Vec3d(space.maxRadius()) +
-                        al::rnd::ball<al::Vec3d>() * space.maxRadius() * 0.9);
+      space.move(i, al::rnd::ball<al::Vec3d>() * space.maxRadius() + center);
       velocity[i] = al::rnd::ball<al::Vec3d>();
     }
 
@@ -57,7 +42,7 @@ struct MyApp : al::App {
 
     compileDefaultShader(defaultShader, al::ShaderType::COLOR);
 
-    nav().faceToward(al::Vec3d(space.maxRadius()));
+    nav().faceToward(center);
     nav().nudgeF(-0.5);
     nav().step();
     nav().step();
@@ -73,28 +58,6 @@ struct MyApp : al::App {
 
       qmany.clear();
       float r = 0.17;
-
-      // brute force search nearest
-      /*
-      int count = 0;
-      for (int j = i + 1; j < space.numObjects(); ++j) {
-        float distance = (space.object(j).pos - position).mag();
-        if (distance < r * space.maxRadius()) {
-          ++count;
-        }
-      }
-      std::cout << count << " within " << r * space.maxRadius() << std::endl;
-      */
-
-      // nearest single neighbor?
-      /*
-     al::HashSpace::Query q{6};
-      auto* n = q.nearest(space, &space.object(i));
-      if (n) {
-        std::cout << "got this" << std::endl;
-      }
-      */
-
       int results = qmany(space, position, r * space.maxRadius());
       for (int k = 0; k < results; ++k) {
         float other = float(qmany[k]->id) / space.numObjects();
@@ -139,9 +102,8 @@ struct MyApp : al::App {
     g.scale(1.0 / space.dim());
     g.draw(mesh);
 
-    g.shader(defaultShader);
-    g.color(1);
-    g.draw(box);
+    // g.shader(defaultShader);
   }
 };
+
 int main() { MyApp().start(); }
