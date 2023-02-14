@@ -20,9 +20,9 @@ std::vector<std::string> ip{
     "192.168.1.115",  // Karl
     "192.168.1.196",  // Ryan
     "192.168.1.113",  // Jinjin
-    "192.168.1.123",  // Shaokang
+    "192.168.1.78",   // Shaokang
     "192.168.1.192",  // Sabina
-    "192.168.1.178",  // Olifa
+    "192.168.1.176",  // Olifa
 };
 
 struct Agent {
